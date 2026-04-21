@@ -4,6 +4,9 @@ import json
 import os
 from typing import Any, Dict
 
+from openai import AsyncOpenAI
+from agents import set_default_openai_client
+
 from chatkit.server import StreamingResult
 from fastapi import Depends, FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,6 +29,28 @@ from airline.context import (
 from server import AirlineServer
 
 app = FastAPI()
+
+# ---------------------------------------------------------------------------
+# Astraflow provider support (OpenAI-compatible)
+# Priority: ASTRAFLOW_CN_API_KEY (China) > ASTRAFLOW_API_KEY (Global)
+# Falls back to the standard OpenAI client when neither key is set.
+# Sign up: https://astraflow.ucloud.cn/
+# ---------------------------------------------------------------------------
+_astraflow_cn_key = os.environ.get("ASTRAFLOW_CN_API_KEY")
+_astraflow_key = os.environ.get("ASTRAFLOW_API_KEY")
+
+if _astraflow_cn_key:
+    _astraflow_client = AsyncOpenAI(
+        api_key=_astraflow_cn_key,
+        base_url="https://api.modelverse.cn/v1",
+    )
+    set_default_openai_client(_astraflow_client)
+elif _astraflow_key:
+    _astraflow_client = AsyncOpenAI(
+        api_key=_astraflow_key,
+        base_url="https://api-us-ca.umodelverse.ai/v1",
+    )
+    set_default_openai_client(_astraflow_client)
 
 # Disable tracing for zero data retention orgs
 os.environ.setdefault("OPENAI_TRACING_DISABLED", "1")
