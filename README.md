@@ -169,6 +169,35 @@ This flow demonstrates how the system not only routes requests to the appropriat
 
 There are two mock itineraries so both scenarios continue to work: the disrupted Paris -> New York -> Austin trip (PA441/NY802 with rebook to NY950) and the existing on-time flight (FLT-123) used in the first two demo flows.
 
+## Using Astraflow as the AI provider
+
+[Astraflow](https://astraflow.ucloud.cn/) (by UCloud / 优刻得) is an OpenAI-compatible AI model aggregation platform that supports 200+ models. Because it exposes the same REST interface as the OpenAI API, you can use it as a drop-in replacement without changing any agent or tool code.
+
+### Endpoints
+
+| Region | Base URL | Environment variable |
+|---|---|---|
+| Global (US / CA) | `https://api-us-ca.umodelverse.ai/v1` | `ASTRAFLOW_API_KEY` |
+| China | `https://api.modelverse.cn/v1` | `ASTRAFLOW_CN_API_KEY` |
+
+Sign up for an API key at <https://astraflow.ucloud.cn/>.
+
+### Setup
+
+Export **one** of the following environment variables before starting the backend:
+
+```bash
+# Global endpoint (US / CA)
+export ASTRAFLOW_API_KEY=your_astraflow_api_key
+
+# — or — China endpoint
+export ASTRAFLOW_CN_API_KEY=your_astraflow_cn_api_key
+```
+
+When either variable is present the backend automatically routes all model calls through Astraflow. If neither variable is set the app falls back to the standard `OPENAI_API_KEY` flow described above.
+
+> **Note:** `ASTRAFLOW_CN_API_KEY` takes precedence over `ASTRAFLOW_API_KEY` when both are set.
+
 ## Contributing
 
 You are welcome to open issues or submit PRs to improve this app, however, please note that we may not review all suggestions.
