@@ -16,6 +16,29 @@ It is composed of two parts:
 
 ## How to use
 
+### Using Astraflow as the AI provider
+
+[Astraflow](https://astraflow.ucloud.cn/) (by UCloud / 优刻得) is an OpenAI-compatible AI model aggregation platform that supports 200+ models. Because it speaks the OpenAI API, it works as a transparent drop-in replacement — no code changes are required beyond setting the appropriate environment variable.
+
+**Global endpoint** (`ASTRAFLOW_API_KEY`)
+```bash
+export ASTRAFLOW_API_KEY=your_astraflow_api_key
+```
+
+**China endpoint** (`ASTRAFLOW_CN_API_KEY`)
+```bash
+export ASTRAFLOW_CN_API_KEY=your_astraflow_cn_api_key
+```
+
+You can optionally override the model (defaults to `gpt-4o` when using Astraflow):
+```bash
+export ASTRAFLOW_MODEL=deepseek-v3   # any of the 200+ models on the platform
+```
+
+Sign up for an API key at <https://astraflow.ucloud.cn/>.
+
+When neither `ASTRAFLOW_API_KEY` nor `ASTRAFLOW_CN_API_KEY` is set, the app falls back to the standard OpenAI key described below.
+
 ### Setting your OpenAI API key
 
 You can set your OpenAI API key in your environment variables by running the following command in your terminal:
