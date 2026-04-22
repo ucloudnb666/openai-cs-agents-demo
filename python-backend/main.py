@@ -4,6 +4,9 @@ import json
 import os
 from typing import Any, Dict
 
+from openai import AsyncOpenAI
+from agents import set_default_openai_client
+
 from chatkit.server import StreamingResult
 from fastapi import Depends, FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,6 +29,32 @@ from airline.context import (
 from server import AirlineServer
 
 app = FastAPI()
+
+# ---------------------------------------------------------------------------
+# Astraflow provider support
+# Astraflow (by UCloud / 优刻得) is an OpenAI-compatible AI model aggregation
+# platform supporting 200+ models.  When an Astraflow API key is present it is
+# registered as the default OpenAI client so every agent transparently uses it.
+#
+# Global endpoint  : https://api-us-ca.umodelverse.ai/v1  (ASTRAFLOW_API_KEY)
+# China  endpoint  : https://api.modelverse.cn/v1         (ASTRAFLOW_CN_API_KEY)
+# Sign-up          : https://astraflow.ucloud.cn/
+# ---------------------------------------------------------------------------
+_ASTRAFLOW_API_KEY = os.environ.get("ASTRAFLOW_API_KEY", "")
+_ASTRAFLOW_CN_API_KEY = os.environ.get("ASTRAFLOW_CN_API_KEY", "")
+
+if _ASTRAFLOW_API_KEY:
+    _astraflow_client = AsyncOpenAI(
+        api_key=_ASTRAFLOW_API_KEY,
+        base_url="https://api-us-ca.umodelverse.ai/v1",
+    )
+    set_default_openai_client(_astraflow_client)
+elif _ASTRAFLOW_CN_API_KEY:
+    _astraflow_client = AsyncOpenAI(
+        api_key=_ASTRAFLOW_CN_API_KEY,
+        base_url="https://api.modelverse.cn/v1",
+    )
+    set_default_openai_client(_astraflow_client)
 
 # Disable tracing for zero data retention orgs
 os.environ.setdefault("OPENAI_TRACING_DISABLED", "1")
