@@ -22,7 +22,23 @@ from .tools import (
     update_seat,
 )
 
-MODEL = "gpt-5.2"
+# ---------------------------------------------------------------------------
+# Model selection
+# When Astraflow credentials are present the ASTRAFLOW_MODEL env var lets
+# operators choose any of the 200+ models on the platform without code changes.
+# Falls back to the OpenAI model used by the rest of the demo.
+# ---------------------------------------------------------------------------
+import os as _os
+
+_ASTRAFLOW_ACTIVE = bool(
+    _os.environ.get("ASTRAFLOW_API_KEY") or _os.environ.get("ASTRAFLOW_CN_API_KEY")
+)
+
+# Default Astraflow model – can be overridden via the ASTRAFLOW_MODEL env var.
+_ASTRAFLOW_DEFAULT_MODEL = "gpt-4o"
+ASTRAFLOW_MODEL: str = _os.environ.get("ASTRAFLOW_MODEL", _ASTRAFLOW_DEFAULT_MODEL)
+
+MODEL = ASTRAFLOW_MODEL if _ASTRAFLOW_ACTIVE else "gpt-5.2"
 
 
 def seat_services_instructions(
